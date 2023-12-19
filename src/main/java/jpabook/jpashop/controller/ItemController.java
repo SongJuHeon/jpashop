@@ -65,17 +65,26 @@ public class ItemController {
     }
 
     @PostMapping("items/{itemId}/edit")
-    public String updateItem(@ModelAttribute("form") BookForm form) {
+    public String updateItem(@PathVariable Long itemId, @ModelAttribute("form") BookForm form) {
         //id값 같은 경우 변조의 위험이 있어 유저별로 수정 권한이 있는지 체크하는 로직이 필요(서비스로직 등의 위치에서)
 
+        //준영속 엔티티
+        //영속성 엔티티가 관리하지 않음
         Book book = new Book();
 
+        //객체는 새로 생성됐으나, Id는 존재하는 값을 가져온 것. 즉 DB를 한 번 갔다온 상태로 식별자가 있는 상태를
+        //준영속 엔티티라고 한다.
+        // 아래는 머지 방식으로 데이터를 변경한 것
+        /*
         book.setId(form.getId());
         book.setName(form.getName());
         book.setPrice(form.getPrice());
         book.setStockQuantity(form.getStockQuantity());
         book.setAuthor(form.getAuthor());
         book.setIsbn(form.getIsbn());
+        */
+
+        itemService.updateItem(itemId, form.getName(), form.getPrice(), form.getStockQuantity());
 
         itemService.saveItem(book);
         return "redirect:/items";
